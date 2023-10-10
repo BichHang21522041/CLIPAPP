@@ -65,14 +65,15 @@ export const UploadScreen = ({props}) => {
       headers: {'Content-Type': 'multipart/form-data'},
       data: data,
     };
-
     try {
+      navigation.navigate('Starting', {
+        params: {item: file.uri},
+      })
       const response = await axios(config);
       console.log(response.data[0]);
     } catch (error) {
       console.error(error);
     }
-
     // axios.request(config)
     // .then((response) => {
     //   console.log(data)
@@ -97,21 +98,21 @@ export const UploadScreen = ({props}) => {
         <Text style={styles.reviewTitle}>
           This app will predict {'\n'}the class based on your image!
         </Text>
+        <Text style={styles.fileName}>{file.name}</Text>
         <TouchableOpacity
           style={styles.buttonContainer}
           onPress={() => pickDocument()}>
           <Image source={IC_UPLOAD}></Image>
           <Text style={styles.buttonText}>Upload files</Text>
         </TouchableOpacity>
-        <Text>{file.name}</Text>
-        <TouchableOpacity>
-          <Text style={styles.buttonText} onPress={() => handleSubmit()}>
+        <TouchableOpacity style={styles.submitContainer} onPress={() => handleSubmit()}>
+          <Text style={styles.submitText} >
             Submit
           </Text>
         </TouchableOpacity>
-        <Text style={styles.note}>
+        {/* <Text style={styles.note}>
           Upload image file for the app to predict the class name.
-        </Text>
+        </Text> */}
       </View>
     </SafeAreaView>
   );
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: scale(199, 'w'),
     height: scale(52, 'h'),
-    marginTop: scale(60, 'h'),
+    marginTop: scale(12, 'h'),
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
@@ -182,6 +183,28 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     textAlign: 'center',
   },
+  fileName: {
+    textAlign: 'center',
+    alignSelf: 'center',
+    marginTop: scale(15, 'h'),
+    width: "80%"
+  },
+  submitContainer: {
+    width: scale(199, 'w'),
+    height: scale(52, 'h'),
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginTop: scale(20, 'h'),
+
+  },
+  submitText: {
+    color: 'orange',
+    fontSize: scale(20, 'h'),
+    fontWeight: 'bold',
+  }
 });
 
 export default UploadScreen;
