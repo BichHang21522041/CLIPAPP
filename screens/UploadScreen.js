@@ -22,6 +22,7 @@ export const UploadScreen = ({ props }) => {
   const navigation = useNavigation();
   const fs = require('react-native-fs');
   const [file, setFile] = useState('');
+
   async function pickDocument() {
     try {
       const result = await launchCamera({});
@@ -30,17 +31,15 @@ export const UploadScreen = ({ props }) => {
     } catch (err) {
 
     }
-  }
-
+  };
+ 
   async function handleSubmit() {
-    // navigation.navigate('Starting', { item: file, text:"asasdr" },
-    //   );
     let data = new FormData();
     console.log(file);
     data.append('my_image', {
       uri: file,
       name: 'image',
-      type: 'image/jpeg' // or your mime type what you want
+      type: 'image/jpeg'
     });
     let config = {
       method: 'post',
