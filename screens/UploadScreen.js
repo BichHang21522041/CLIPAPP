@@ -17,22 +17,58 @@ import { PermissionsAndroid } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
 import FormData from 'form-data';
+import Popup from '../src/components/PopUp';
+import Modal from 'react-native-modal';
 
 export const UploadScreen = ({ props }) => {
   const navigation = useNavigation();
   const fs = require('react-native-fs');
   const [file, setFile] = useState('');
+  const [visible, setVisible] = useState(false);
 
-  async function pickDocument() {
+  // async function pickDocument() {
+  //   try {
+  //     const result = await launchCamera({});
+  //     console.log(result)
+  //     setFile(result.assets[0].uri)
+  //   } catch (err) {
+
+  //   }
+  // };
+  let options = {
+    savePhotos: true,
+    mediaType: 'photo',
+  };
+
+  async function openCamera() {
     try {
-      const result = await launchCamera({});
-      console.log(result)
-      setFile(result.assets[0].uri)
-    } catch (err) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        const result = await launchCamera(options);
+        console.log(result);
+        setFile(result.assets[0].uri);
+        setVisible(false);
+      }
+    }
+    catch (err) {
 
     }
   };
- 
+
+  async function openGallery() {
+    try {
+      const result = await launchImageLibrary(options);
+      console.log(result);
+      setFile(result.assets[0].uri);
+      setVisible(false);
+    }
+    catch (err) {
+
+    }
+  };
+
   async function handleSubmit() {
     let data = new FormData();
     console.log(file);
@@ -71,7 +107,7 @@ export const UploadScreen = ({ props }) => {
         <Text style={styles.fileName}>{file}</Text>
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => pickDocument()}>
+          onPress={() => setVisible(true)}>
           <Image source={IC_UPLOAD}></Image>
           <Text style={styles.buttonText}>Upload files</Text>
         </TouchableOpacity>
@@ -81,6 +117,13 @@ export const UploadScreen = ({ props }) => {
           <Text style={styles.submitText}>Submit</Text>
         </TouchableOpacity>
       </View>
+      <Modal 
+      style={styles.modalContainer}
+      onBackdropPress={() => setVisible(false)}
+      onBackButtonPress={() => setVisible(false)}
+      isVisible={visible}>
+        <Popup onPressUpload={openGallery} onPressCamera={openCamera}></Popup>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -173,6 +216,16 @@ const styles = StyleSheet.create({
     color: 'orange',
     fontSize: scale(20, 'h'),
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    marginLeft: 0,
+    marginTop: 'auto',
+    flex: 0.3,
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+    marginBottom: 0,
   },
 });
 
