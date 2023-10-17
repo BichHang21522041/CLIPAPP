@@ -11,13 +11,14 @@ import scale from '../src/constants/responsive';
 import { IC_BACK, IC_MUSIC } from '../src/assets/icons';
 import { useNavigation } from '@react-navigation/native';
 
-const StartingScreen = ({route}) => {
-  const {item} = route.params;
+const StartingScreen = ({ route }) => {
+  const { item, text } = route.params;
+  console.log(route.params)
   const navigation = useNavigation()
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
-      {console.log('item',item)}
+        {console.log(item)}
         <View style={styles.headerContainer}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -31,14 +32,10 @@ const StartingScreen = ({route}) => {
         <Text style={styles.text}>Here is your prediction. Hope you are pleased with the result!</Text>
       </View>
       <View style={styles.bottomContainer}>
-          {/* <Text style={styles.fileStatus}>You have already uploaded the image.</Text>
-          <Text style={styles.blackText}>Let’s click<Text style={styles.orangeText}> the button </Text>to {'\n'}predict {'\n'}based on your image!</Text>
-          <TouchableOpacity style={styles.buttonContainer}
-          onPress={()=> navigation.navigate("Export")}>
-          <Image source={IC_MUSIC}></Image>
-          <Text style={styles.buttonText}>Predict</Text>
-        </TouchableOpacity> */}
-        {/* <Image></Image> */}
+        <Image source={{ uri: item }} width={300} height={500}></Image>
+        <Text style={styles.resultText}>
+          {text}
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -65,14 +62,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: scale(40, 'w'),
     marginLeft: scale(24, 'w'),
-    marginTop: scale(10, 'h'),
     fontWeight: 'bold',
   },
   bottomContainer: {
-    flex: 0.7,
+    flex: 0.8,
     backgroundColor: 'white',
     borderTopStartRadius: scale(40, 'w'),
     borderTopEndRadius: scale(40, 'w'),
+    justifyContent:'center',
+    alignItems: 'center',
   },
   fileStatus: {
     marginTop: scale(38, 'h'),
@@ -123,17 +121,14 @@ const styles = StyleSheet.create({
     fontSize: scale(20, 'h'),
     marginLeft: scale(24, 'w'),
     marginRight: scale(10, 'w')
+  },
+  resultText: {
+    color: 'black',
+    fontSize: scale(20, 'h'),
+    marginTop: scale(5, 'h'),
+    fontStyle: 'italic',
+    fontWeight: 'bold',
   }
 });
 
 export default StartingScreen;
-// import { View, Text } from 'react-native'
-// import React from 'react'
-
-// export default function StartingScreen() {
-//   return (
-//     <View>
-//       <Text>hello</Text>
-//     </View>
-//   )
-// }
