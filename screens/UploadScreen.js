@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import scale from '../src/constants/responsive';
 import { IMG_LOGO } from '../src/assets/images';
@@ -19,12 +21,14 @@ import axios from 'axios';
 import FormData from 'form-data';
 import Popup from '../src/components/PopUp';
 import Modal from 'react-native-modal';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 export const UploadScreen = ({ props }) => {
   const navigation = useNavigation();
   const fs = require('react-native-fs');
   const [file, setFile] = useState('');
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // async function pickDocument() {
   //   try {
@@ -70,24 +74,33 @@ export const UploadScreen = ({ props }) => {
   };
 
   async function handleSubmit() {
-    let data = new FormData();
-    console.log(file);
-    data.append('my_image', {
-      uri: file,
-      name: 'image',
-      type: 'image/jpeg'
-    });
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://bichhang21522041-clip.hf.space/submit',
-      headers: { 'Content-Type': 'multipart/form-data' },
-      data: data,
-    };
-    await axios(config).then((response) => {
-      navigation.navigate('Starting', { item: file, text: response.data[0] },
-      );
-    })
+    if (file !== '') {
+      setLoading(true);
+      let data = new FormData();
+      console.log(file);
+      data.append('my_image', {
+        uri: file,
+        name: 'image',
+        type: 'image/jpeg'
+      });
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'https://bichhang21522041-clip.hf.space/submit',
+        headers: { 'Content-Type': 'multipart/form-data' },
+        data: data,
+      };
+      await axios(config).then((response) => {
+        setLoading(false)
+        navigation.navigate('Starting', { item: file, text: response.data[0] },
+        );
+      }) .catch ((error) => {
+        setLoading(false);
+        console.log(error)
+      })
+    } else {
+      Alert.alert('Please upload file to predict!');
+    }
   }
   return (
     <SafeAreaView style={styles.container}>
@@ -105,17 +118,25 @@ export const UploadScreen = ({ props }) => {
           This app will predict {'\n'}the class based on your image!
         </Text>
         <Text style={styles.fileName}>{file}</Text>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => setVisible(true)}>
-          <Image source={IC_UPLOAD}></Image>
-          <Text style={styles.buttonText}>Upload files</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitContainer}
-          onPress={() => handleSubmit()}>
-          <Text style={styles.submitText}>Submit</Text>
-        </TouchableOpacity>
+        {!loading ? (
+          <View>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => setVisible(true)}
+            >
+              <Image source={IC_UPLOAD} />
+              <Text style={styles.buttonText}>Upload file</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.submitContainer}
+              onPress={() => handleSubmit()}
+            >
+              <Text style={styles.submitText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+            <ActivityIndicator color={"#fff"} size={50} style={{marginTop: scale(40, 'h')}}/>
+        )}
       </View>
       <Modal 
       style={styles.modalContainer}
