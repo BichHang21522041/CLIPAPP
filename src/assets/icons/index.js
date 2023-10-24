@@ -7,3 +7,5 @@ export {default as IC_DOWNLOAD} from './Download.png';
 export {default as IC_MUSIC} from './Music1.png';
 export {default as IC_SHOW} from './show.png';
 export {default as IC_HIDE} from './hide.png';
+export {default as IC_LOGO} from './logoclip.png';
+export {default as IC_ABOUT} from './about.png';

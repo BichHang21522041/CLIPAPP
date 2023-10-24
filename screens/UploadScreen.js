@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -10,20 +10,18 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import scale from '../src/constants/responsive';
-import { IMG_LOGO } from '../src/assets/images';
-import { IC_UPLOAD } from '../src/assets/icons';
-import { useNavigation } from '@react-navigation/native';
-import DocumentPicker from 'react-native-document-picker';
+import {IC_LOGO, IC_UPLOAD, IC_ABOUT} from '../src/assets/icons';
+import {useNavigation} from '@react-navigation/native';
 //import storage from '@react-native-firebase/storage'
-import { PermissionsAndroid } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import {PermissionsAndroid} from 'react-native';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import axios from 'axios';
 import FormData from 'form-data';
 import Popup from '../src/components/PopUp';
 import Modal from 'react-native-modal';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-export const UploadScreen = ({ props }) => {
+export const UploadScreen = ({props}) => {
   const navigation = useNavigation();
   const fs = require('react-native-fs');
   const [file, setFile] = useState('');
@@ -55,11 +53,8 @@ export const UploadScreen = ({ props }) => {
         setFile(result.assets[0].uri);
         setVisible(false);
       }
-    }
-    catch (err) {
-
-    }
-  };
+    } catch (err) {}
+  }
 
   async function openGallery() {
     try {
@@ -67,11 +62,8 @@ export const UploadScreen = ({ props }) => {
       console.log(result);
       setFile(result.assets[0].uri);
       setVisible(false);
-    }
-    catch (err) {
-
-    }
-  };
+    } catch (err) {}
+  }
 
   async function handleSubmit() {
     if (file !== '') {
@@ -81,23 +73,24 @@ export const UploadScreen = ({ props }) => {
       data.append('my_image', {
         uri: file,
         name: 'image',
-        type: 'image/jpeg'
+        type: 'image/jpeg',
       });
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: 'https://bichhang21522041-clip.hf.space/submit',
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {'Content-Type': 'multipart/form-data'},
         data: data,
       };
-      await axios(config).then((response) => {
-        setLoading(false)
-        navigation.navigate('Starting', { item: file, text: response.data[0] },
-        );
-      }) .catch ((error) => {
-        setLoading(false);
-        console.log(error)
-      })
+      await axios(config)
+        .then(response => {
+          setLoading(false);
+          navigation.navigate('Starting', {item: file, text: response.data[0]});
+        })
+        .catch(error => {
+          setLoading(false);
+          console.log(error);
+        });
     } else {
       Alert.alert('Please upload file to predict!');
     }
@@ -105,12 +98,19 @@ export const UploadScreen = ({ props }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
+        <View style={styles.aboutContainer}>
+          <TouchableOpacity
+            style={styles.aboutBtn}
+            onPress={() => navigation.navigate('About')}>
+            <Image source={IC_ABOUT}></Image>
+          </TouchableOpacity>
+        </View>
         <View style={styles.logoContainer}>
-          <Image source={IMG_LOGO}></Image>
+          <Image style={styles.logo} source={IC_LOGO}></Image>
         </View>
         <View style={styles.titleContainer}>
           <Text style={styles.appName}>C L I P</Text>
-          <Text style={styles.appTitle}>I  M  A  G  E  C  L  A  S  S  I  F  I  E  R</Text>
+          <Text style={styles.appTitle}>I M A G E C L A S S I F I E R</Text>
         </View>
       </View>
       <View style={styles.bottomContainer}>
@@ -122,27 +122,29 @@ export const UploadScreen = ({ props }) => {
           <View>
             <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={() => setVisible(true)}
-            >
+              onPress={() => setVisible(true)}>
               <Image source={IC_UPLOAD} />
               <Text style={styles.buttonText}>Upload file</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.submitContainer}
-              onPress={() => handleSubmit()}
-            >
+              onPress={() => handleSubmit()}>
               <Text style={styles.submitText}>Submit</Text>
             </TouchableOpacity>
           </View>
         ) : (
-            <ActivityIndicator color={"#fff"} size={50} style={{marginTop: scale(40, 'h')}}/>
+          <ActivityIndicator
+            color={'#fff'}
+            size={50}
+            style={{marginTop: scale(40, 'h')}}
+          />
         )}
       </View>
-      <Modal 
-      style={styles.modalContainer}
-      onBackdropPress={() => setVisible(false)}
-      onBackButtonPress={() => setVisible(false)}
-      isVisible={visible}>
+      <Modal
+        style={styles.modalContainer}
+        onBackdropPress={() => setVisible(false)}
+        onBackButtonPress={() => setVisible(false)}
+        isVisible={visible}>
         <Popup onPressUpload={openGallery} onPressCamera={openCamera}></Popup>
       </Modal>
     </SafeAreaView>
@@ -152,13 +154,33 @@ export const UploadScreen = ({ props }) => {
 const styles = StyleSheet.create({
   container: {
     height: '100%',
+    backgroundColor: 'white',
   },
   topContainer: {
     flex: 0.6,
   },
+  aboutContainer: {
+    height: scale(65, 'h'),
+    flexDirection: 'row-reverse',
+    display: 'flex',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  aboutBtn: {
+    width: scale(40, 'h'),
+    height: scale(40, 'h'),
+    backgroundColor: 'orange',
+    borderRadius: 50,
+    marginRight: scale(10, 'h'),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logoContainer: {
-    marginTop: scale(65, 'h'),
     alignSelf: 'center',
+  },
+  logo: {
+    width: scale(150, 'h'),
+    height: scale(150, 'h'),
   },
   titleContainer: {
     margin: scale(10, 'h'),
@@ -174,6 +196,7 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: 'black',
     textAlign: 'justify',
+    fontStyle: 'italic',
   },
   bottomContainer: {
     width: '100%',
