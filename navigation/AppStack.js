@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import StartingScreen from '../screens/StartingScreen';
 import UploadScreen from '../screens/UploadScreen';
 import ExportScreen from '../screens/ExportScreen';
-
+import AboutScreen from '../screens/AboutScreen';
 
 const Stack = createNativeStackNavigator();
 export default function AppStack() {
@@ -23,6 +23,11 @@ export default function AppStack() {
       <Stack.Screen
         name="Export"
         component={ExportScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="About"
+        component={AboutScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
