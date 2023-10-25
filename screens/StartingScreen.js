@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import scale from '../src/constants/responsive';
-import { IC_BACK, IC_MUSIC } from '../src/assets/icons';
-import { useNavigation } from '@react-navigation/native';
+import {IC_BACK, IC_MUSIC} from '../src/assets/icons';
+import {useNavigation} from '@react-navigation/native';
 
-const StartingScreen = ({ route }) => {
-  const { item, text } = route.params;
-  console.log(route.params)
-  const navigation = useNavigation()
+const StartingScreen = ({route}) => {
+  const {item, text} = route.params;
+  console.log(route.params);
+  const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
@@ -29,11 +29,20 @@ const StartingScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
         <Text style={styles.title}>Success!</Text>
-        <Text style={styles.text}>Here is your prediction. Hope you are pleased with the result!</Text>
+        <Text style={styles.text}>
+          Here is your prediction. {'\n'}Hope you are pleased with the result!
+        </Text>
       </View>
       <View style={styles.bottomContainer}>
-        <Image source={{ uri: item }} width={300} height={500}></Image>
+        <Image source={{uri: item}} width={300} height={500}></Image>
         <Text style={styles.resultText}>
+          <Text
+            style={{
+              fontSize: scale(18, 'h'),
+              fontStyle: 'italic',
+            }}>
+            Prediction:{' '}
+          </Text>
           {text}
         </Text>
       </View>
@@ -69,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopStartRadius: scale(40, 'w'),
     borderTopEndRadius: scale(40, 'w'),
-    justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   fileStatus: {
@@ -118,9 +127,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
-    fontSize: scale(20, 'h'),
+    fontSize: scale(19, 'h'),
     marginLeft: scale(24, 'w'),
-    marginRight: scale(10, 'w')
+    marginRight: scale(10, 'w'),
   },
   resultText: {
     color: 'black',
@@ -128,7 +137,7 @@ const styles = StyleSheet.create({
     marginTop: scale(5, 'h'),
     fontStyle: 'italic',
     fontWeight: 'bold',
-  }
+  },
 });
 
 export default StartingScreen;
