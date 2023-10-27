@@ -212,13 +212,14 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '90%',
-    backgroundColor: 'white',
+    //backgroundColor: 'none',
     //marginVertical: scale(80, 'h'),
     borderRadius: 30,
-    flex: 0.5,
+    flex: 1,
     alignSelf: 'center',
     alignContent: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

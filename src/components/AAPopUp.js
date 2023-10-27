@@ -6,7 +6,19 @@ import {Linking} from 'react-native';
 const AAPopUp = ({props}) => {
   return (
     <View style={styles.viewModal}>
-      <Text style={styles.title}>Này để gì giờ?</Text>
+      <Text style={styles.title}>Application Information</Text>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoContent}>
+          {'\n'}Github:{' '}
+          <Text
+            style={styles.infoLink}
+            onPress={() =>
+              Linking.openURL('https://github.com/BichHang21522041/CLIPAPP')
+            }>
+            https://github.com/clipapp
+          </Text>
+        </Text>
+      </View>
     </View>
   );
 };
@@ -28,13 +40,17 @@ const styles = StyleSheet.create({
   infoContainer: {
     width: 'auto',
     height: 'auto',
-    margin: scale(20, 'h'),
+    marginLeft: scale(20, 'h'),
+    marginRight: scale(20, 'h'),
+    marginBottom: scale(20, 'h'),
+    alignItems: 'center',
+    //justifyContent: 'center',
   },
   infoContent: {
     fontSize: scale(13, 'h'),
     color: 'black',
     textAlign: 'justify',
-    marginTop: scale(10, 'h'),
+    marginTop: scale(5, 'h'),
   },
   infoLink: {
     fontSize: scale(13, 'h'),
