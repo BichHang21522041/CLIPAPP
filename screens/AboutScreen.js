@@ -6,16 +6,19 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Alert,
-  ActivityIndicator,
 } from 'react-native';
 import scale from '../src/constants/responsive';
-import {IC_LOGO, IC_UPLOAD, IC_ABOUT} from '../src/assets/icons';
+import {IC_ABOUT} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
-import {ScaleLoader} from 'react-spinners';
+import Modal from 'react-native-modal';
+import AUPopUp from '../src/components/AUPopUp';
+import AAPopUp from '../src/components/AAPopUp';
 
 export const AboutScreen = ({props}) => {
   const navigation = useNavigation();
+  const [visible1, setVisible1] = useState(false);
+  const [visible2, setVisible2] = useState(false);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.aboutContainer}>
@@ -26,7 +29,10 @@ export const AboutScreen = ({props}) => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <View style={styles.container1}>
+        <TouchableOpacity
+          onPress={() => setVisible1(true)}
+          style={styles.container1}
+          activeOpacity={0.8}>
           <Text style={styles.title}>ABOUT US</Text>
           <View style={styles.textContainer}>
             <Text style={styles.text}>
@@ -76,8 +82,11 @@ export const AboutScreen = ({props}) => {
               .{'\n'}
             </Text>
           </View>
-        </View>
-        <View style={styles.container2}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setVisible2(true)}
+          style={styles.container2}
+          activeOpacity={0.8}>
           <Text style={styles.title}>ABOUT APPLICATION</Text>
           <View style={styles.textContainer}>
             <Text style={styles.text}>
@@ -100,11 +109,25 @@ export const AboutScreen = ({props}) => {
               {'\n'}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.info}>CLIP version 1.0</Text>
       </View>
+      <Modal
+        style={styles.modalContainer}
+        onBackdropPress={() => setVisible1(false)}
+        onBackButtonPress={() => setVisible1(false)}
+        isVisible={visible1}>
+        <AUPopUp></AUPopUp>
+      </Modal>
+      <Modal
+        style={styles.modalContainer}
+        onBackdropPress={() => setVisible2(false)}
+        onBackButtonPress={() => setVisible2(false)}
+        isVisible={visible2}>
+        <AAPopUp></AAPopUp>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -186,6 +209,17 @@ const styles = StyleSheet.create({
   info: {
     fontSize: scale(10, 'h'),
     fontStyle: 'italic',
+  },
+  modalContainer: {
+    width: '90%',
+    //backgroundColor: 'none',
+    //marginVertical: scale(80, 'h'),
+    borderRadius: 30,
+    flex: 1,
+    alignSelf: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
