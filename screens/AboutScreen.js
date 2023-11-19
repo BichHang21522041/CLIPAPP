@@ -24,7 +24,7 @@ export const AboutScreen = ({props}) => {
       <View style={styles.aboutContainer}>
         <TouchableOpacity
           style={styles.aboutBtn}
-          onPress={() => navigation.navigate('Upload')}>
+          onPress={() => navigation.goBack()}>
           <Image source={IC_ABOUT}></Image>
         </TouchableOpacity>
       </View>

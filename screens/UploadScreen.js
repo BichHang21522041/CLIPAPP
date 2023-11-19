@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import scale from '../src/constants/responsive';
-import {IC_LOGO, IC_UPLOAD, IC_ABOUT} from '../src/assets/icons';
+import {IC_LOGO, IC_UPLOAD, IC_ABOUT, IC_BACK} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 //import storage from '@react-native-firebase/storage'
 import {PermissionsAndroid} from 'react-native';
@@ -85,7 +85,7 @@ export const UploadScreen = ({props}) => {
       await axios(config)
         .then(response => {
           setLoading(false);
-          navigation.navigate('Starting', {item: file, text: response.data[0]});
+          navigation.navigate('Result', {item: file, text: response.data[0]});
         })
         .catch(error => {
           setLoading(false);
@@ -100,9 +100,11 @@ export const UploadScreen = ({props}) => {
       <View style={styles.topContainer}>
         <View style={styles.aboutContainer}>
           <TouchableOpacity
-            style={styles.aboutBtn}
-            onPress={() => navigation.navigate('About')}>
-            <Image source={IC_ABOUT}></Image>
+            style={styles.iconButton}
+            onPress={() => {
+              navigation.goBack();
+            }}>
+            <Image source={IC_BACK}></Image>
           </TouchableOpacity>
         </View>
         <View style={styles.logoContainer}>
@@ -161,10 +163,16 @@ const styles = StyleSheet.create({
   },
   aboutContainer: {
     height: scale(65, 'h'),
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     display: 'flex',
     alignContent: 'center',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  iconButton: {
+    width: scale(30, 'w'),
+    height: scale(30, 'h'),
+    marginLeft: scale(20, 'w'),
   },
   aboutBtn: {
     width: scale(40, 'h'),
