@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -6,15 +6,98 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Alert
 } from 'react-native';
 import scale from '../src/constants/responsive';
 import {IC_BACK, IC_MUSIC} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
+import DeviceInfo from 'react-native-device-info';
+// import firestore from '@react-native-firebase/firestore';
+import {firebase} from '../configs/FirebaseConfig'
+import {utils} from '@react-native-firebase/app'
+import storage from '@react-native-firebase/storage'
 
 const StartingScreen = ({route}) => {
   const {item, text} = route.params;
   console.log(route.params);
   const navigation = useNavigation();
+  const [id, setID] = useState();
+
+  useEffect(() => {
+    addPrediction()
+  }, []);
+
+  const addPrediction = async () => {
+    try {
+      const deviceId = await DeviceInfo.getUniqueId();
+      const url = await handleUpload();
+      const prediction = {class: text, image: url}
+      const historyRef = firebase.firestore().collection('history');
+      const querySnapshot = await historyRef.where('id', '==', deviceId).get();
+      const now = firebase.firestore.Timestamp.now()
+
+      if (!querySnapshot.empty) {
+        // Document with the deviceId already exists, update the existing document
+        const docId = querySnapshot.docs[0].id; // Assuming there is only one document with the deviceId
+        const existingPredictions = querySnapshot.docs[0].data().predictions || [];
+        const updatedPredictions = [...existingPredictions, prediction];
+        console.log("helllo1")
+        await historyRef.doc(docId).update({
+          predictions: updatedPredictions
+        });
+      } else {
+        console.log("helllo2")
+        await historyRef.add({
+          id: deviceId,
+          predictions: [prediction],
+          date: now,
+        });
+      }
+  
+      console.log('Prediction added to Firestore successfully!');
+    } catch (error) {
+      console.error('Error adding prediction to Firestore:', error);
+    }
+  };
+
+  async function uriToBlob(uri) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function() {
+        reject(new Error('uriToBlob failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+  }
+
+  const handleUpload = async () => {
+      try {
+          const blob = await uriToBlob(item);
+          console.log(blob)
+          const reference = storage().ref().child(`images/${Date.now()}`);
+          const task = reference.put(blob);
+
+          task.on('state_changed', (snapshot) => {
+            console.log(
+              `${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}% completed`
+            );
+          });
+  
+          await task;
+          const url = await reference.getDownloadURL();
+          console.log('File uploaded to Firebase storage:', url);
+          return url;
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+  
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>

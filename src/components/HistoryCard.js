@@ -3,11 +3,11 @@ import React from 'react';
 import scale from '../constants/responsive';
 import {IMG_CAMERA} from '../assets/images';
 
-const HistoryCard = ({props}) => {
+const HistoryCard = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
-        <Image style={styles.img} source={IMG_CAMERA}></Image>
+        <Image style={styles.img} source={{uri: props.image}}></Image>
       </View>
       <View style={styles.textContainer}>
         <Text
@@ -26,7 +26,16 @@ const HistoryCard = ({props}) => {
             fontWeight: 'bold',
             marginTop: scale(20, 'h'),
           }}>
-          Con Ga
+          {props.class}
+        </Text>
+
+        <Text
+          style={{
+            fontSize: scale(18, 'h'),
+            color: 'black',
+            marginTop: scale(30, 'h'),
+          }}>
+          {props.date}
         </Text>
       </View>
     </View>
