@@ -12,9 +12,10 @@ import {IC_BACK, IC_SHARE} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import SharePopUp from '../src/components/SharePopUp';
 import Modal from 'react-native-modal';
+import {PermissionsAndroid} from 'react-native';
+
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
-import {PermissionsAndroid} from 'react-native';
 
 const ResultScreen = ({route}) => {
   const {item, text} = route.params;
@@ -25,14 +26,22 @@ const ResultScreen = ({route}) => {
   async function checkPermission() {
     console.log('do duoc ne');
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      const granted = await PermissionsAndroid.requestMultiple(
+        [
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        ],
         {
           title: 'Storage Permission Required',
           message: 'App needs access to your storage to download Photos',
         },
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      if (
+        granted['android.permission.READ_EXTERNAL_STORAGE'] ===
+          PermissionsAndroid.RESULTS.GRANTED &&
+        granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+          PermissionsAndroid.RESULTS.GRANTED
+      ) {
         // Once user grant the permission start downloading
         console.log('Storage Permission Granted.');
         downloadFile();
@@ -46,55 +55,42 @@ const ResultScreen = ({route}) => {
     }
   }
 
-  const fileUri = item;
+  const copyFileToDirectory = async (filePath, destinationDirectory) => {
+    try {
+      const fileName = filePath.split('/').pop(); // Extract the file name from the path
+      const destinationPath = `${destinationDirectory}/${fileName}`;
+      if (!(await RNFS.exists(destinationPath)))
+        await RNFS.writeFile(destinationPath, '', 'utf8');
+      await RNFS.copyFile(filePath, destinationPath);
 
-  // Get the https:// or http:// URL of the file
-  const url =
-    'https:/' +
-    RNFS.DocumentDirectoryPath +
-    '/' +
-    fileUri.substring(fileUri.lastIndexOf('/') + 1);
-
-  console.log(url);
+      console.log('File copied successfully:', destinationPath);
+      return destinationPath;
+    } catch (error) {
+      console.error('Error copying file:', error);
+      throw error;
+    }
+  };
 
   async function downloadFile() {
-    // Main function to download the image
-
-    // To add the time suffix in filename
-    let date = new Date();
-    // Image URL which we want to download
-    let image_URL = url;
-    // Getting the extention of the file
-    let ext = getExtention(image_URL);
-    ext = '.' + ext[0];
-    console.log('ex: ', ext);
-    // Get config and fs from RNFetchBlob
-    // config: To pass the downloading related options
-    // fs: Directory path where we want our image to download
-    const {fs} = RNFetchBlob;
-    let PictureDir = fs.dirs.PictureDir;
-
-    RNFetchBlob.config({
-      fileCache: true,
-      appendExt: 'jpg',
-      addAndroidDownloads: {
-        // Related to the Android only
-        useDownloadManager: true,
-        notification: true,
-        path:
-          PictureDir +
-          '/image_' +
-          Math.floor(date.getTime() + date.getSeconds() / 2) +
-          ext,
-        description: 'Image',
-      },
-    })
-      .fetch('GET', image_URL)
-      .then(res => {
-        // Showing alert after successful downloading
-        console.log('res -> ', JSON.stringify(res));
-        alert('Image Downloaded Successfully.');
+    console.log('oke');
+    const sourceFilePath = item; // Replace with your source file path
+    const destinationDirectory = `${RNFS.PicturesDirectoryPath}`;
+    console.log(sourceFilePath, destinationDirectory);
+    copyFileToDirectory(sourceFilePath, destinationDirectory)
+      .then(copiedFilePath => {
+        // Handle the copied file path
+        console.log('Copied File Path:', copiedFilePath);
+      })
+      .catch(error => {
+        // Handle the error
+        console.error('Error:', error);
       });
+
+    try {
+    } catch (error) {
+      console.error('Error Downloading Image:', error);
+      throw error;
+    }
   }
 
   async function getExtention(filename) {
@@ -105,7 +101,6 @@ const ResultScreen = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
-        {console.log(item)}
         <View style={styles.headerContainer}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -144,7 +139,7 @@ const ResultScreen = ({route}) => {
         onBackButtonPress={() => setVisible(false)}
         isVisible={visible}>
         <SharePopUp
-          onPressDownload={() => checkPermission()}
+          onPressDownload={checkPermission()}
           onPressShare={() => {}}></SharePopUp>
       </Modal>
     </SafeAreaView>
