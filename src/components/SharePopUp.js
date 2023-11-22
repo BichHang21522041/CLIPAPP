@@ -8,7 +8,7 @@ const SharePopUp = props => {
     <View style={styles.viewModal}>
       <TouchableOpacity
         style={styles.viewPopUpLeft}
-        onPress={props.onPressUpload}>
+        onPress={props.onPressDownload}>
         <View style={styles.viewTextPopUp}>
           <Text style={styles.textPopUp}>Download</Text>
           <View style={styles.viewImagePopUp}>
@@ -18,7 +18,7 @@ const SharePopUp = props => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.viewPopUpRight}
-        onPress={props.onPressCamera}>
+        onPress={props.onPressShare}>
         <View style={styles.viewTextPopUp}>
           <Text style={styles.textPopUp}>Share</Text>
           <View style={styles.viewImagePopUp}>

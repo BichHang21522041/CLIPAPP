@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import scale from '../src/constants/responsive';
-import {IC_BACK, IC_SHARE} from '../src/assets/icons';
+import {IC_BACK, IC_SHARE, IC_OK} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import SharePopUp from '../src/components/SharePopUp';
 import Modal from 'react-native-modal';
@@ -22,6 +22,7 @@ const ResultScreen = ({route}) => {
   console.log(route.params);
   const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
+  const [isOk, setIsOk] = useState(false);
 
   async function checkPermission() {
     console.log('do duoc ne');
@@ -59,6 +60,7 @@ const ResultScreen = ({route}) => {
     try {
       const fileName = filePath.split('/').pop(); // Extract the file name from the path
       const destinationPath = `${destinationDirectory}/${fileName}`;
+
       if (!(await RNFS.exists(destinationPath)))
         await RNFS.writeFile(destinationPath, '', 'utf8');
       await RNFS.copyFile(filePath, destinationPath);
@@ -73,13 +75,17 @@ const ResultScreen = ({route}) => {
 
   async function downloadFile() {
     console.log('oke');
+
     const sourceFilePath = item; // Replace with your source file path
     const destinationDirectory = `${RNFS.PicturesDirectoryPath}`;
+
     console.log(sourceFilePath, destinationDirectory);
+
     copyFileToDirectory(sourceFilePath, destinationDirectory)
       .then(copiedFilePath => {
         // Handle the copied file path
         console.log('Copied File Path:', copiedFilePath);
+        setIsOk(true);
       })
       .catch(error => {
         // Handle the error
@@ -139,8 +145,14 @@ const ResultScreen = ({route}) => {
         onBackButtonPress={() => setVisible(false)}
         isVisible={visible}>
         <SharePopUp
-          onPressDownload={checkPermission()}
+          onPressDownload={() => checkPermission()}
           onPressShare={() => {}}></SharePopUp>
+      </Modal>
+      <Modal
+        onBackdropPress={() => setIsOk(false)}
+        onBackButtonPress={() => setIsOk(false)}
+        isVisible={isOk}>
+        <Image source={IC_OK} style={styles.isOk}></Image>
       </Modal>
     </SafeAreaView>
   );
