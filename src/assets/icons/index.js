@@ -10,3 +10,4 @@ export {default as IC_HIDE} from './hide.png';
 export {default as IC_LOGO} from './logoclip.png';
 export {default as IC_ABOUT} from './about.png';
 export {default as IC_EL} from './Ellipse.png';
+export {default as IC_SHARE} from './share.png';

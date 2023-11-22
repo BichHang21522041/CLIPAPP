@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -8,13 +8,100 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import scale from '../src/constants/responsive';
-import {IC_BACK, IC_MUSIC} from '../src/assets/icons';
+import {IC_BACK, IC_SHARE} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
+import SharePopUp from '../src/components/SharePopUp';
+import Modal from 'react-native-modal';
+import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
+import {PermissionsAndroid} from 'react-native';
 
-const StartingScreen = ({route}) => {
+const ResultScreen = ({route}) => {
   const {item, text} = route.params;
   console.log(route.params);
   const navigation = useNavigation();
+  const [visible, setVisible] = useState(false);
+
+  async function checkPermission() {
+    console.log('do duoc ne');
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission Required',
+          message: 'App needs access to your storage to download Photos',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        // Once user grant the permission start downloading
+        console.log('Storage Permission Granted.');
+        downloadFile();
+      } else {
+        // If permission denied then show alert
+        alert('Storage Permission Not Granted');
+      }
+    } catch (err) {
+      // To handle permission related exception
+      console.warn(err);
+    }
+  }
+
+  const fileUri = item;
+
+  // Get the https:// or http:// URL of the file
+  const url =
+    'https:/' +
+    RNFS.DocumentDirectoryPath +
+    '/' +
+    fileUri.substring(fileUri.lastIndexOf('/') + 1);
+
+  console.log(url);
+
+  async function downloadFile() {
+    // Main function to download the image
+
+    // To add the time suffix in filename
+    let date = new Date();
+    // Image URL which we want to download
+    let image_URL = url;
+    // Getting the extention of the file
+    let ext = getExtention(image_URL);
+    ext = '.' + ext[0];
+    console.log('ex: ', ext);
+    // Get config and fs from RNFetchBlob
+    // config: To pass the downloading related options
+    // fs: Directory path where we want our image to download
+    const {fs} = RNFetchBlob;
+    let PictureDir = fs.dirs.PictureDir;
+
+    RNFetchBlob.config({
+      fileCache: true,
+      appendExt: 'jpg',
+      addAndroidDownloads: {
+        // Related to the Android only
+        useDownloadManager: true,
+        notification: true,
+        path:
+          PictureDir +
+          '/image_' +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          ext,
+        description: 'Image',
+      },
+    })
+      .fetch('GET', image_URL)
+      .then(res => {
+        // Showing alert after successful downloading
+        console.log('res -> ', JSON.stringify(res));
+        alert('Image Downloaded Successfully.');
+      });
+  }
+
+  async function getExtention(filename) {
+    // To get the file extension
+    return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
@@ -26,6 +113,11 @@ const StartingScreen = ({route}) => {
               navigation.goBack();
             }}>
             <Image source={IC_BACK}></Image>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => setVisible(true)}>
+            <Image source={IC_SHARE}></Image>
           </TouchableOpacity>
         </View>
         <Text style={styles.title}>Success!</Text>
@@ -46,6 +138,15 @@ const StartingScreen = ({route}) => {
           {text}
         </Text>
       </View>
+      <Modal
+        style={styles.modalContainer}
+        onBackdropPress={() => setVisible(false)}
+        onBackButtonPress={() => setVisible(false)}
+        isVisible={visible}>
+        <SharePopUp
+          onPressDownload={() => checkPermission()}
+          onPressShare={() => {}}></SharePopUp>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -60,8 +161,10 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    marginTop: scale(36, 'h'),
+    marginTop: scale(24, 'h'),
     marginLeft: scale(24, 'w'),
+    marginRight: scale(10, 'h'),
+    justifyContent: 'space-between',
   },
   iconButton: {
     width: scale(30, 'w'),
@@ -138,6 +241,16 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: 'bold',
   },
+  modalContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    marginLeft: 0,
+    marginTop: 'auto',
+    flex: 0.3,
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+    marginBottom: 0,
+  },
 });
 
-export default StartingScreen;
+export default ResultScreen;
