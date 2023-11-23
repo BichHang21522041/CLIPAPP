@@ -1,4 +1,4 @@
-package com.appclip;
+package com.imageclip;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1056168020087",
+    "project_id": "image-clip-bc780",
+    "storage_bucket": "image-clip-bc780.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056168020087:android:a1f86c06ff391aa774de72",
+        "android_client_info": {
+          "package_name": "com.imageclip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwRfShEMb9nBqk0JRy9Qcb3JzYzgMaC-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

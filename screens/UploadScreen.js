@@ -111,7 +111,7 @@ export const UploadScreen = ({props}) => {
         </View>
         <View style={styles.titleContainer}>
           <Text style={styles.appName}>C L I P</Text>
-          <Text style={styles.appTitle}>I M A G E C L A S S I F I E R</Text>
+          <Text style={styles.appTitle}>I M A G E   C L A S S I F I E R</Text>
         </View>
       </View>
       <View style={styles.bottomContainer}>

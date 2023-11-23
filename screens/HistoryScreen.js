@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,62 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  FlatList
 } from 'react-native';
 import scale from '../src/constants/responsive';
 import {IC_ABOUT, IC_BACK} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import HistoryCard from '../src/components/HistoryCard';
+import DeviceInfo from 'react-native-device-info';
+import {firebase} from '../configs/FirebaseConfig'
 
 export const HistoryScreen = ({props}) => {
   const navigation = useNavigation();
+  const [predictions, setPredictions] = useState([]);
+
+  async function PredictionList() {
+    const predictionRef = firebase.firestore().collection('history');
+    const predictionSnapshot = await predictionRef.get();
+    const predictionData = predictionSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+          const deviceId = await DeviceInfo.getUniqueId();
+    const predictionList = predictionData.filter(
+      prediction =>
+        prediction.id === deviceId
+    );
+
+    const sortedPredictions = predictionList[0].predictions.sort((a, b) => {
+      const dateA = new Date(a.date.toDate());
+      const dateB = new Date(b.date.toDate());
+      return dateB - dateA;
+    });
+    return sortedPredictions;
+  }
+
+  
+  const renderPredictionItem = ({item: prediction}) => {
+    const date = prediction.date.toDate();
+    const options = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    };
+    const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
+    return (
+      <HistoryCard class={prediction.class} image={prediction.image} date={formattedDate}/>
+    );
+  };
+
+  useEffect(() => {
+    console.log("hello")
+    PredictionList().then(data => setPredictions(data));
+  }, [predictions.length]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,16 +78,13 @@ export const HistoryScreen = ({props}) => {
       <View>
         <Text style={styles.title}>Check your history predition!</Text>
       </View>
-      <ScrollView style={styles.historyContainer}>
-        <HistoryCard></HistoryCard>
-        <HistoryCard></HistoryCard>
-        <HistoryCard></HistoryCard>
-        <HistoryCard></HistoryCard>
-        <HistoryCard></HistoryCard>
-        <HistoryCard></HistoryCard>
-        <HistoryCard></HistoryCard>
-      </ScrollView>
-    </SafeAreaView>
+        <FlatList style={styles.historyContainer}
+          data={predictions}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderPredictionItem}
+          ListEmptyComponent={<Text>There have been no predictions</Text>}
+        />
+    </SafeAreaView> 
   );
 };
 

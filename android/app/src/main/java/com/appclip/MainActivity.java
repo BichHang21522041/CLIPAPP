@@ -1,4 +1,4 @@
-package com.appclip;
+package com.imageclip;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
