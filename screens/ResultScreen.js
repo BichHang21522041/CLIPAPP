@@ -55,7 +55,7 @@ const ResultScreen = ({route}) => {
         downloadFile();
       } else {
         // If permission denied then show alert
-        alert('Storage Permission Not Granted');
+        Alert.alert('Storage Permission Not Granted');
       }
     } catch (err) {
       // To handle permission related exception
@@ -111,7 +111,6 @@ const ResultScreen = ({route}) => {
     return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
   }
 
-  const [id, setID] = useState();
 
   useEffect(() => {
     addPrediction();
@@ -119,12 +118,13 @@ const ResultScreen = ({route}) => {
 
   const addPrediction = async () => {
     try {
+      const now = firebase.firestore.Timestamp.now();
       const deviceId = await DeviceInfo.getUniqueId();
       const url = await handleUpload();
-      const prediction = {class: text, image: url};
+      const prediction = {class: text, image: url, date: now };
       const historyRef = firebase.firestore().collection('history');
       const querySnapshot = await historyRef.where('id', '==', deviceId).get();
-      const now = firebase.firestore.Timestamp.now();
+
 
       if (!querySnapshot.empty) {
         // Document with the deviceId already exists, update the existing document
@@ -141,7 +141,6 @@ const ResultScreen = ({route}) => {
         await historyRef.add({
           id: deviceId,
           predictions: [prediction],
-          date: now,
         });
       }
 
