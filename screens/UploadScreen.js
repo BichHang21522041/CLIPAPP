@@ -19,7 +19,6 @@ import axios from 'axios';
 import FormData from 'form-data';
 import Popup from '../src/components/PopUp';
 import Modal from 'react-native-modal';
-import ClipLoader from 'react-spinners/ClipLoader';
 
 export const UploadScreen = ({props}) => {
   const navigation = useNavigation();
