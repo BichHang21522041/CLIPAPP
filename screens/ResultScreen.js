@@ -197,7 +197,7 @@ const ResultScreen = ({route}) => {
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => {
-              navigation.goBack();
+              navigation.navigate('Upload');
             }}>
             <Image source={IC_BACK}></Image>
           </TouchableOpacity>
