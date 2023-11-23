@@ -34,6 +34,10 @@ export const HistoryScreen = ({props}) => {
         prediction.id === deviceId
     );
 
+    if (predictionList.length === 0) {
+      return [];
+    }
+
     const sortedPredictions = predictionList[0].predictions.sort((a, b) => {
       const dateA = new Date(a.date.toDate());
       const dateB = new Date(b.date.toDate());
@@ -76,13 +80,13 @@ export const HistoryScreen = ({props}) => {
         </TouchableOpacity>
       </View>
       <View>
-        <Text style={styles.title}>Check your history predition!</Text>
+        <Text style={styles.title}>Check your history prediction!</Text>
       </View>
         <FlatList style={styles.historyContainer}
           data={predictions}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderPredictionItem}
-          ListEmptyComponent={<Text>There have been no predictions</Text>}
+          ListEmptyComponent={<Text style={{textAlign: 'center',}}>There have been no predictions</Text>}
         />
     </SafeAreaView> 
   );
