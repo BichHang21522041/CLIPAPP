@@ -67,10 +67,11 @@ const ResultScreen = ({route}) => {
     try {
       const fileName = filePath.split('/').pop(); // Extract the file name from the path
       const destinationPath = `${destinationDirectory}/${fileName}`;
-
+      console.log(destinationPath);
       if (!(await RNFS.exists(destinationPath)))
         await RNFS.writeFile(destinationPath, '', 'utf8');
       await RNFS.copyFile(filePath, destinationPath);
+      await RNFS.scanFile(destinationPath);
 
       console.log('File copied successfully:', destinationPath);
       return destinationPath;
@@ -106,12 +107,6 @@ const ResultScreen = ({route}) => {
     }
   }
 
-  async function getExtention(filename) {
-    // To get the file extension
-    return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
-  }
-
-
   useEffect(() => {
     addPrediction();
   }, []);
@@ -121,10 +116,9 @@ const ResultScreen = ({route}) => {
       const now = firebase.firestore.Timestamp.now();
       const deviceId = await DeviceInfo.getUniqueId();
       const url = await handleUpload();
-      const prediction = {class: text, image: url, date: now };
+      const prediction = {class: text, image: url, date: now};
       const historyRef = firebase.firestore().collection('history');
       const querySnapshot = await historyRef.where('id', '==', deviceId).get();
-
 
       if (!querySnapshot.empty) {
         // Document with the deviceId already exists, update the existing document
@@ -140,7 +134,7 @@ const ResultScreen = ({route}) => {
         console.log('helllo2');
         await historyRef.add({
           id: deviceId,
-          predictions: [prediction],
+          predictions: [...prediction],
         });
       }
 
@@ -196,7 +190,7 @@ const ResultScreen = ({route}) => {
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => {
-              navigation.goBack();
+              navigation.navigate('Upload');
             }}>
             <Image source={IC_BACK}></Image>
           </TouchableOpacity>
@@ -342,6 +336,11 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     marginBottom: 0,
+  },
+  isOk: {
+    width: scale(300, 'w'),
+    height: scale(300, 'h'),
+    alignSelf: 'center',
   },
 });
 

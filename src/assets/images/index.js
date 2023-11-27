@@ -6,3 +6,4 @@ export {default as IMG_CAMERA} from './cam.png';
 export {default as IMG_LIBRARY} from './lib.png';
 export {default as IMG_SHARE} from './sharef.png';
 export {default as IMG_DOWNLOAD} from './down.png';
+export {default as GIF_LOADING} from './gif.gif';
