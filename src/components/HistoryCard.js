@@ -1,13 +1,20 @@
 import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import scale from '../constants/responsive';
-import {IMG_CAMERA} from '../assets/images';
+import {IMG_CAMERA, GIF_LOADING} from '../assets/images';
 
-const HistoryCard = (props) => {
+const HistoryCard = props => {
+  const [loading, setLoading] = useState(false);
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
-        <Image style={styles.img} source={{uri: props.image}}></Image>
+        <Image
+          style={styles.img}
+          source={{uri: props.image}}
+          onLoadStart={() => setLoading(true)}
+          onLoadEnd={() => {
+            setLoading(false);
+          }}></Image>
       </View>
       <View style={styles.textContainer}>
         <Text

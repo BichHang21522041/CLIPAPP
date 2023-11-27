@@ -6,20 +6,21 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
   ScrollView,
-  FlatList
+  FlatList,
 } from 'react-native';
 import scale from '../src/constants/responsive';
 import {IC_ABOUT, IC_BACK} from '../src/assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import HistoryCard from '../src/components/HistoryCard';
 import DeviceInfo from 'react-native-device-info';
-import {firebase} from '../configs/FirebaseConfig'
+import {firebase} from '../configs/FirebaseConfig';
 
 export const HistoryScreen = ({props}) => {
   const navigation = useNavigation();
   const [predictions, setPredictions] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   async function PredictionList() {
     const predictionRef = firebase.firestore().collection('history');
     const predictionSnapshot = await predictionRef.get();
@@ -28,10 +29,9 @@ export const HistoryScreen = ({props}) => {
       ...doc.data(),
     }));
 
-          const deviceId = await DeviceInfo.getUniqueId();
+    const deviceId = await DeviceInfo.getUniqueId();
     const predictionList = predictionData.filter(
-      prediction =>
-        prediction.id === deviceId
+      prediction => prediction.id === deviceId,
     );
 
     if (predictionList.length === 0) {
@@ -46,8 +46,8 @@ export const HistoryScreen = ({props}) => {
     return sortedPredictions;
   }
 
-  
   const renderPredictionItem = ({item: prediction}) => {
+    console.log(prediction);
     const date = prediction.date.toDate();
     const options = {
       day: '2-digit',
@@ -57,15 +57,25 @@ export const HistoryScreen = ({props}) => {
       hour: '2-digit',
       minute: '2-digit',
     };
-    const formattedDate = date.toLocaleString('en-GB', options).replace(',', '');
+    const formattedDate = date
+      .toLocaleString('en-GB', options)
+      .replace(',', '');
     return (
-      <HistoryCard class={prediction.class} image={prediction.image} date={formattedDate}/>
+      <HistoryCard
+        class={prediction.class}
+        image={prediction.image}
+        date={formattedDate}
+      />
     );
   };
 
   useEffect(() => {
-    console.log("hello")
-    PredictionList().then(data => setPredictions(data));
+    console.log('hello');
+    setIsLoading(true);
+    PredictionList().then(data => {
+      setPredictions(data);
+      setIsLoading(false);
+    });
   }, [predictions.length]);
 
   return (
@@ -82,13 +92,26 @@ export const HistoryScreen = ({props}) => {
       <View>
         <Text style={styles.title}>Check your history prediction!</Text>
       </View>
-        <FlatList style={styles.historyContainer}
+      {!isLoading ? (
+        <FlatList
+          style={styles.historyContainer}
           data={predictions}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderPredictionItem}
-          ListEmptyComponent={<Text style={{textAlign: 'center',}}>There have been no predictions</Text>}
+          ListEmptyComponent={
+            <Text style={{textAlign: 'center'}}>
+              There have been no predictions
+            </Text>
+          }
         />
-    </SafeAreaView> 
+      ) : (
+        <ActivityIndicator
+          color={'#000000'}
+          size={50}
+          style={{marginTop: scale(40, 'h')}}
+        />
+      )}
+    </SafeAreaView>
   );
 };
 
