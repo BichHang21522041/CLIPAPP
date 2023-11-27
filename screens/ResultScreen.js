@@ -19,6 +19,7 @@ import DeviceInfo from 'react-native-device-info';
 import {firebase} from '../configs/FirebaseConfig';
 import {utils} from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
+import Share from 'react-native-share';
 
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
@@ -30,6 +31,20 @@ const ResultScreen = ({route}) => {
 
   const [visible, setVisible] = useState(false);
   const [isOk, setIsOk] = useState(false);
+
+  async function handleShare() {
+    try {
+      const shareOptions = {
+        title: 'ImageCLIP',
+        url: item,
+        message: 'Prediction: ' + text,
+      };
+      const shareResponse = await Share.open(shareOptions);
+      console.log(shareResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function checkPermission() {
     console.log('do duoc ne');
@@ -225,7 +240,7 @@ const ResultScreen = ({route}) => {
         isVisible={visible}>
         <SharePopUp
           onPressDownload={() => checkPermission()}
-          onPressShare={() => {}}></SharePopUp>
+          onPressShare={() => handleShare()}></SharePopUp>
       </Modal>
       <Modal
         onBackdropPress={() => setIsOk(false)}
