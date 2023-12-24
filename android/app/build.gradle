@@ -79,8 +79,8 @@ android {
         applicationId "com.imageclip"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
     }
     signingConfigs {
         // debug {
@@ -97,12 +97,7 @@ android {
                 keyPassword MYAPP_UPLOAD_KEY_PASSWORD
             }
         }
-        release {
-            storeFile file("release.keystore")
-            storePassword '240119'
-            keyAlias 'key0'
-            keyPassword '240119'
-        }
+
     }
     buildTypes {
         debug {

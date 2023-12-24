@@ -149,7 +149,7 @@ const ResultScreen = ({route}) => {
         console.log('helllo2');
         await historyRef.add({
           id: deviceId,
-          predictions: [...prediction],
+          predictions: [prediction],
         });
       }
 
